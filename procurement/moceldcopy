@@ -1,0 +1,345 @@
+#author: robinson
+from django.db import models
+
+class Catalogue(models.Model):
+    catalogueId = models.AutoField(primary_key=True)
+    catalogueName = models.CharField('Name',max_length='64',null=False)
+    catalogueType = models.CharField('Type',max_length='64',null=False)
+    UNSPSCCode = models.CharField('UNSPS Code',max_length='64',null=False)
+    catalogueDescription = models.TextField('Catalogue Description',null=False)
+    dateAdded = models.DateField('Date Added',null=False)
+    def __unicode__(self):
+        return unicode(self.catalogueId)
+
+class Language(models.Model):
+    languageId = models.AutoField(primary_key=True)
+    name = models.CharField(max_length='64',null=False)
+    code = models.CharField(max_length='4',null=False)
+    def __unicode__(self):
+        return unicode(self.name)
+
+class Manufacturer(models.Model):
+    manufacturerId = models.AutoField(primary_key=True)
+    language = models.ForeignKey(Language,null=False)
+    manufacturerUrl = models.URLField('URL',null=False)
+    dateLastClicked = models.DateTimeField('Last Clicked Date',null=False)
+    def __unicode__(self):
+        return unicode(self.manufacturerId)
+
+class Buyer(models.Model):
+    buyerId = models.AutoField(primary_key=True)
+    buyerName = models.CharField('Name',max_length='150',null=False)
+    buyerDeliveryAddress = models.CharField('Delivery Address',max_length='150',null=False)
+    buyerBillAddress = models.CharField('Bill Address',max_length='150',null=False)
+    language = models.ForeignKey(Language,null=False)
+    buyerPostalCode = models.CharField('Postal Code',max_length='25',null=False)
+    buyerCity = models.CharField('City',max_length='100',null=False)
+    buyerCountry = models.CharField('Country',max_length='100',null=False)
+    buyerContact = models.CharField('Contact',max_length='100',null=False)
+    buyerPhoneNo = models.CharField('Phone Number',max_length='25',null=False)
+    buyerEmail = models.EmailField('Email',null=False)
+    buyerActive = models.BooleanField('Active')
+    buyerLogin = models.CharField('Login',max_length='50',null=False)
+    buyerStatus = models.CharField('Status',max_length='6',null=False)
+    buyerRegStatus = models.CharField('Registration status',max_length='6',null=False)
+    def __unicode__(self):
+        return unicode(self.buyerId)
+
+class Supplier(models.Model):
+    supplierId = models.AutoField(primary_key=True)
+    supplierName = models.CharField('Name',max_length='150',null=False)
+    SupplierAddress = models.CharField('Address',max_length='200',null=False)
+    language = models.ForeignKey(Language,null=False)
+    supplierPostalCode = models.CharField('Postal Code',max_length='25',null=False)
+    supplierCity = models.CharField('City',max_length='100',null=False)
+    supplierCountry = models.CharField('Country',max_length='100',null=False)
+    supplierContact = models.CharField('Contact',max_length='100',null=False)
+    supplierPhoneNo = models.CharField('Phone Number',max_length='25',null=False)
+    supplierEmail = models.EmailField(null=False)
+    supplierActive = models.BooleanField('Active')
+    supplierProfile = models.TextField('Profile',null=False)
+    supplierLogin = models.CharField('Login',max_length='50',null=False)
+    supplierDUNS = models.CharField('DUNS',max_length='50',null=False)
+    supplierType = models.CharField('Type',max_length='50',null=False)
+    supplierWebsite = models.URLField('Website')
+    supplierStatus = models.CharField('Status',max_length='6',null=False)
+    supplierRegStatus = models.CharField('Registration Status', max_length='6',null=False)
+    buyerId = models.ForeignKey(Buyer,null=False)
+    def __unicode__(self):
+        return unicode(self.supplierId)
+
+class Article(models.Model):
+    productsId = models.AutoField(primary_key=True)
+    productsQuantity = models.IntegerField('Quantity',max_length='16',null=False)
+    productsModel = models.CharField('Model',max_length='64',null=False)
+    #productsImage =models.ImageField(upload_to='images')
+    productsPrice = models.CharField('Price',max_length='64',null=False)
+    productsDateAdded = models.DateField('Date Added',null=False)
+    productsLastModified = models.DateField('Last Modified',null=False)
+    productsDateAvailable = models.DateField('Date Available',null=False)
+    productsWeight = models.CharField('Weight',max_length='64',null=False)
+    productsStatus = models.CharField('Status',max_length='8',null=False)
+    productsTaxClassVat = models.CharField('Tax Class VAT',max_length='50',null=False)
+    manufacturerId = models.ForeignKey(Manufacturer,null=False)
+    productsOrdered = models.IntegerField('Ordered',max_length='16',null=False)
+    articleUOM = models.CharField('Article uom',max_length='64',null=False)
+    productsWeightAndInfo = models.CharField('Weight and Info',max_length='1024',null=False)
+    productsWeightTech = models.CharField('Weight Tech',max_length='1024',null=False)
+    productsDeliDate = models.DateField('Delivery Date',null=False)
+    productsWeightNo = models.CharField('Weight No.',max_length='225',null=False)
+    productsOrderQnt = models.IntegerField('Order Quantity',max_length='16',null=False)
+    productsMinAddQnt = models.IntegerField('Minimum add quantity',max_length='16',null=False)
+    productsCntUnt = models.CharField('Count Unit',max_length='64',null=False)
+    productsCode = models.CharField('Code',max_length='255',null=False)
+    catalogueId =models.ForeignKey(Catalogue,null=False)
+    def __unicode__(self):
+        return unicode(self.productsId)
+
+class CatalogueGroup(models.Model):
+    buyerId = models.ForeignKey(Buyer,null=False)
+    catalogueGroupId = models.AutoField(primary_key=True)
+    catalogueGroupName = models.CharField('Group Name',max_length='150',null=False)
+    catalogueGroupDescription = models.TextField('Group Description',null=False)
+    def __unicode__(self):
+        return unicode(self.catalogueGroupId)
+
+class CategoriesDescription(models.Model):
+    categoriesId = models.AutoField(primary_key=True)
+    language = models.ForeignKey(Language,null=False)
+    categoriesName = models.CharField('Name',max_length='64',null=False)
+    catalogueId = models.ForeignKey(Catalogue,null=False)
+    def __unicode__(self):
+        return unicode(self.categoriesId)
+
+class ArticleCategoryDetails(models.Model):
+    productsId = models.ForeignKey(Article,null=False)
+    categoriesId = models.ForeignKey(CategoriesDescription,null=False)
+
+class CostCentre(models.Model):
+    buyerId = models.ForeignKey(Buyer,null=False)
+    costCentreId = models.AutoField(primary_key=True)
+    costCentreName = models.CharField('Name',max_length='50',null=False)
+    costCentreDescription = models.TextField('Description')
+    def __unicode__(self):
+        return unicode(self.costCentreName)
+
+class CostCode(models.Model):
+    buyerId = models.ForeignKey(Buyer,null=False)
+    costId = models.AutoField(primary_key=True)
+    costCodeName = models.CharField('Name',max_length='50',null=False)
+    costCodeDescription = models.TextField('Description',null=False)
+    def __unicode__(self):
+        return unicode(self.costCodeName)
+
+class Location(models.Model):
+    buyerSupplierId = models.ForeignKey(Buyer,null=False)
+    locationId = models.AutoField(primary_key=True)
+    locationName = models.CharField('Name',max_length='100',null=False)
+    locationDescription = models.TextField('Description',null=False)
+    locationMode = models.CharField('Mode',max_length='5',null=False)
+    def __unicode__(self):
+        return unicode(self.locationName)
+
+class Modules(models.Model):
+    moduleId = models.AutoField(primary_key=True)
+    moduleDescription = models.CharField('Description',max_length='100',null=False)
+    moduleMode = models.CharField('Mode',max_length='5',null=False)
+    def __unicode__(self):
+        return unicode(self.moduleId)
+
+class ModuleActivation(models.Model):
+    buyerSupplierId = models.ForeignKey(Buyer,null=False)
+    moduleId = models.AutoField(primary_key=True)
+    moduleActive = models.BooleanField('Active')
+    def __unicode__(self):
+        return unicode(self.moduleActive)
+
+class BuyerBillAddress(models.Model):
+    buyerSupplierId = models.ForeignKey(Buyer,null=False)
+    billAddressName = models.CharField('Address Name',max_length='255',null=False)
+    billMailbox = models.CharField('Mailbox',max_length='50',null=False)
+    billStreet = models.CharField('Street',max_length='50',null=False)
+    billPostalCode = models.CharField('Postal Code',max_length='25',null=False)
+    billCity = models.CharField('City',max_length='100',null=False)
+    billCountry = models.CharField('Country',max_length='50',null=False)
+    billPhoneNo = models.CharField('Phone number',max_length='25',null=False)
+    billMode = models.CharField('Mode',max_length='10',null=False)
+    def __unicode__(self):
+        return unicode(self.billAddressName)
+
+class UserDeliveryAddress(models.Model):
+    deliveryAddressId = models.AutoField(primary_key=True)
+    delAddressName = models.CharField('Name',max_length='150',null=False)
+    Active = models.BooleanField('Active')
+    buyerId = models.ForeignKey(Buyer,null=False)
+    def __unicode__(self):
+        return unicode(self.delAddressName)
+
+class Unit(models.Model):
+    buyerSupplierId = models.ForeignKey(Buyer,null=False)
+    unitId = models.AutoField(primary_key=True)
+    unitName = models.CharField('Name',max_length='100',null=False)
+    unitDescription = models.CharField('Description',max_length='500',null=False)
+    unitMode = models.CharField('Mode',max_length='5',null=False)
+    def __unicode__(self):
+        return unicode(self.unitName)
+
+class User(models.Model):
+    buyerSupplierId = models.ForeignKey(Buyer,null=False)
+    userId = models.AutoField(primary_key=True)
+    userFName = models.CharField('First Name', max_length='50',null=False)
+    userLName = models.CharField('Last Name', max_length='50',null=False)
+    userTitle = models.CharField('Title', max_length='25',null=False)
+    userLogin = models.CharField('Login', max_length='25',null=False)
+    userPwd = models.CharField('Password',max_length='25',null=False)
+    language = models.ForeignKey(Language,null=False)
+    userEmail = models.EmailField('Email',null=False)
+    userPhoneNo = models.CharField('Phone Number',max_length='25',null=False)
+    userDeliveryAddress = models.ForeignKey(UserDeliveryAddress,null=False)
+    userBillAddress = models.ForeignKey(BuyerBillAddress,null=False)
+    userStatus = models.CharField('Status',max_length='20',null=False)
+    userMode = models.CharField('Mode',max_length='5',null=False)
+    userAdmin = models.CharField('Admin',max_length='5',null=False)
+    userUnit = models.ForeignKey(Unit,null=False)
+    userLocation = models.ForeignKey(Location,null=False)
+    def __unicode__(self):
+        return unicode(self.userId)
+
+
+class UserInvoiceAddress(models.Model):
+    userId = models.ForeignKey(User,null=False)
+    InvAddressName = models.CharField('Name',max_length='150',null=False)
+    Active = models.BooleanField('Active')
+    buyerId = models.ForeignKey(Buyer,null=False)
+    def __unicode__(self):
+        return unicode(self.InvAddressName)
+
+class Roles(models.Model):
+    roleId = models.AutoField(primary_key=True)
+    roleDescription = models.CharField('Description',max_length='100',null=False)
+    roleMode = models.CharField('Mode',max_length='5',null=False)
+    def __unicode__(self):
+        return unicode(self.roleId)
+
+class Service(models.Model):
+    supplierId = models.ForeignKey(Supplier,null=False)
+    serviceId = models.AutoField(primary_key=True)
+    serviceName = models.CharField('Name',max_length='50',null=False)
+    serviceDescription = models.CharField('Description',max_length='255',null=False)
+    ServiceUOM = models.CharField('UOM',max_length='50',null=False)
+    serviceUnitRate = models.DecimalField('Unit Rate',decimal_places='3',max_digits='25',null=False)
+    def __unicode__(self):
+        return unicode(self.serviceName)
+
+class FinancialYear(models.Model):
+    financialYearId = models.AutoField(primary_key=True)
+    financialYearName = models.CharField('Financial Year',max_length='25',null=False)
+    def __unicode__(self):
+        return unicode(self.financialYearName)
+
+class Requisition(models.Model):
+    requisitionId = models.AutoField(primary_key=True)
+    requisitionNo = models.CharField('Number',max_length='50',null=False)
+    requisitionDate = models.DateField('Date',null=False)
+    userId = models.ForeignKey(User,null=False)
+    costCentreId = models.ForeignKey(CostCentre,null=False)
+    supplierId = models.ForeignKey(Supplier,null=False)
+    requisitionCost = models.DecimalField('Cost',decimal_places='3',max_digits='25',null=False)
+    requisitionDescription = models.CharField('Description',max_length='255',null=False)
+    requisitionPurpose = models.CharField('Purpose',max_length='255',null=False)
+    requisitionRemarks = models.TextField('Remarks',null=False)
+    reqDeliveryAddress = models.ForeignKey(UserDeliveryAddress,null=False)
+    reqInvoiceAddress = models.ForeignKey(UserInvoiceAddress,null=False)
+    requisitionStatus = models.CharField('Status',max_length='5',null=False)
+    requisitionType = models.CharField('Type',max_length='5',null=False)
+    requisitionMode = models.CharField('Mode',max_length='5',null=False)
+    financialYear = models.ForeignKey(FinancialYear,null=False)
+    rejectionReason = models.TextField('Rejection reason',null=False)
+    requisitionApprovedDate = models.DateField('Date Approved',null=False)
+    def __unicode__(self):
+        return unicode(self.requisitionNo)
+
+class PurchaseOrder(models.Model):
+    POId = models.AutoField(primary_key=True)
+    PONo = models.CharField('Number',max_length='100',null=False)
+    PODate = models.DateField('Date',null=False)
+    requisitionId = models.ForeignKey(Requisition,null=False)
+    userId = models.ForeignKey(User,null=False)
+    costCentre = models.ForeignKey(CostCentre,null=False)
+    supplierId = models.ForeignKey(Supplier,null=False)
+    POCost = models.DecimalField('Cost',decimal_places='3',max_digits='25',null=False)
+    PORefNo = models.CharField('Ref_No',max_length='100',null=False)
+    POPaymentTerms = models.CharField('Payment Terms',max_length='250',null=False)
+    PODeliveryPeriod = models.CharField('Delivery Period',max_length='150',null=False)
+    PORemarks = models.TextField('Remarks',null=False)
+    PODeliveryAddress = models.ForeignKey(UserDeliveryAddress,null=False)
+    POInvoiceAddress = models.ForeignKey(UserInvoiceAddress,null=False)
+    POStatus = models.CharField('Status',max_length='5',null=False)
+    POType = models.CharField('Type',max_length='5',null=False)
+    POMode = models.CharField('Mode',max_length='5',null=False)
+    financialYearId = models.ForeignKey(FinancialYear,null=False)
+    POCancellationReason = models.TextField('Cancellation Reason',null=False)
+    def __unicode__(self):
+        return unicode(self.PONo)
+
+class PODetails(models.Model):
+    POId = models.ForeignKey(PurchaseOrder,null=False)
+    articleSrNo = models.AutoField(primary_key=True)
+    articleId = models.ForeignKey(Article,null=False)
+    articleCode = models.CharField('Code',max_length='50',null=False)
+    articleDescription = models.CharField('Description',max_length='255',null=False)
+    articleQuantity = models.DecimalField('Quantity',decimal_places='3',max_digits='25',null=False)
+    articleUOM = models.CharField('UOM',max_length='50',null=False)
+    articleUnitPrice = models.DecimalField('Unit Price',decimal_places='3',max_digits='25',null=False)
+    articleLineTotal = models.DecimalField('Line total',decimal_places='3',max_digits='25',null=False)
+    costCode = models.ForeignKey(CostCode)
+
+class RequisitionDetails(models.Model):
+    requisitionId = models.ForeignKey(Requisition)
+    articleSrNo = models.AutoField(primary_key=True)
+    articleId = models.ForeignKey(Article)
+    articleCode = models.CharField('Code',max_length='50',null=False)
+    articleDescription = models.CharField('Description',max_length='255',null=False)
+    articleQuantity = models.DecimalField('Quantity',decimal_places='3',max_digits='25',null=False)
+    articleUOM = models.CharField('UOM',max_length='50',null=False)
+    articleUnitPrice = models.DecimalField('Unit Price',decimal_places='3',max_digits='25',null=False)
+    articleLineTotal = models.DecimalField('Line total',decimal_places='3',max_digits='25',null=False)
+    costCode = models.ForeignKey(CostCode)
+
+class Order(models.Model):
+    orderId = models.AutoField(primary_key=True)
+    customerId = models.ForeignKey(Buyer)
+    customerName = models.CharField('Customer Name',max_length='50',null=False)
+    customerCompany = models.CharField('Customer Company',max_length='50',null=False)
+    customerStreetAddress = models.CharField('Customer Street Address',max_length='50',null=False)
+    customerSuburb = models.CharField('Customer Suburb',max_length='50',null=False)
+    customerCity = models.CharField('Customer City',max_length='50',null=False)
+    customerPostcode = models.CharField('Customer Postcode',max_length='50',null=False)
+    customerState = models.CharField('Customer State',max_length='50',null=False)
+    customerCountry = models.CharField('Customer Country',max_length='50',null=False)
+    customerTelephone = models.CharField('Customer Telephone',max_length='50',null=False)
+    customerEmail = models.EmailField('Customer Email',null=False)
+    deliveryName = models.CharField('Delivery Name',max_length='50',null=False)
+    deliveryCompany = models.CharField('Delivery Company',max_length='50',null=False)
+    deliveryStreetAddress = models.CharField('Delivery Street Address',max_length='50',null=False)
+    deliverySuburb = models.CharField('Delivery Suburb',max_length='50',null=False)
+    deliveryCity = models.CharField('Delivery City',max_length='50',null=False)
+    deliveryPostcode = models.CharField('Delivery Post Code',max_length='50',null=False)
+    deliveryState = models.CharField('Delivery State',max_length='50',null=False)
+    deliveryCountry = models.CharField('Delivery Country',max_length='50',null=False)
+    billingName = models.CharField('Billing Name',max_length='50',null=False)
+    billingCompany = models.CharField('Billing company',max_length='50',null=False)
+    billingStreetAddress = models.CharField('Billing Street Address',max_length='50',null=False)
+    billingSuburb = models.CharField('Billing Suburb',max_length='50',null=False)
+    billingCity = models.CharField('Billing City',max_length='50',null=False)
+    billingPostcode = models.CharField('Billing Post Code',max_length='50',null=False)
+    billingState = models.CharField('Billing State',max_length='50',null=False)
+    billingCountry = models.CharField('Billing Country',max_length='50',null=False)
+    paymentMethod = models.CharField('Payment Method',max_length='50',null=False)
+    lastModified = models.DateField('Last modified',null=False)
+    datePurchased = models.DateField('Date Purchased', null=False)
+    orderStatus = models.CharField('Oder Status',max_length='5',null=False)
+    orderDateFinished = models.DateField('Date Finished',null=False)
+    currency = models.CharField('Currency',max_length='25',null=False)
+    def __unicode__(self):
+        return unicode(self.orderId)
